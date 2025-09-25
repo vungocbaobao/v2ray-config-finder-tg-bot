@@ -1,0 +1,23 @@
+{
+  "name": "v2ray-fetcher-bot",
+  "version": "2.0.0",
+  "description": "A Telegram bot system to fetch, test, and post V2Ray configs.",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start:bot": "node bot.js",
+    "start:tester": "node tester.js",
+    "webhook:info": "dotenv curl \"https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo\"",
+    "webhook:delete": "dotenv curl \"https://api.telegram.org/bot$BOT_TOKEN/deleteWebhook\""
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "socks-proxy-agent": "^8.0.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.3.0"
+  }
+}

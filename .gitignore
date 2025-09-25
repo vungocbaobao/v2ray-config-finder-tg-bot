@@ -1,0 +1,6 @@
+/tmp
+/results
+.env
+node_modules
+xray
+*.sqlite
