@@ -12,6 +12,7 @@ const ADMIN_USER_ID = parseInt(process.env.ADMIN_USER_ID, 10);
 const TARGET_CHANNEL_ID = process.env.TARGET_CHANNEL_ID;
 const PROXY_URL = process.env.PROXY_URL;
 const RESULTS_DIR = './results';
+const POST_BATCH_SIZE = 5;
 
 if (!BOT_TOKEN || !ADMIN_USER_ID || !TARGET_CHANNEL_ID) {
     console.error('Bot token, admin user ID, or target channel ID is missing.');
@@ -19,6 +20,27 @@ if (!BOT_TOKEN || !ADMIN_USER_ID || !TARGET_CHANNEL_ID) {
 }
 
 let bot;
+
+// --- Helper Functions ---
+function getFlagEmoji(countryCode, configName = "") {
+    if (countryCode && countryCode.length === 2 && countryCode !== "XX") {
+        try {
+        return String.fromCodePoint(
+            ...countryCode
+            .toUpperCase()
+            .split("")
+            .map((char) => 127397 + char.charCodeAt())
+        );
+        } catch (e) {
+        }
+    }
+
+    const flagRegex = /\p{Regional_Indicator}{2}/u;
+    const match = configName.match(flagRegex);
+    if (match) return match[0]; 
+
+  return "🏁";
+}
 
 // --- Main Bot Logic ---
 async function startBot() {
@@ -46,6 +68,7 @@ async function startBot() {
 
 // --- Command Handlers ---
 function setupCommandHandlers() {
+    // (Command handler code is unchanged)
     bot.on('message', (msg) => {
         if (msg.text && msg.text.startsWith('/') && msg.from.id !== ADMIN_USER_ID) {
             bot.sendMessage(msg.chat.id, "❌ Access Denied.");
@@ -62,7 +85,7 @@ function setupCommandHandlers() {
         if (msg.from.id !== ADMIN_USER_ID) return;
         const helpText = `
 🤖 *Bot Command Reference*
-\`/addfile <URL>\` - Adds a URL for the tester to check.
+\`/addfile <URL>\` - Adds a URL for the tester.
 \`/removefile <ID>\` - Removes a URL for the tester.
 \`/listfiles\` - Lists URLs the tester is checking.
 \`/setschedule <seconds>\` - Sets the posting interval.
@@ -111,7 +134,7 @@ function setupCommandHandlers() {
 // --- POSTING CYCLE ---
 let postingInterval;
 
-async function postNextConfig() {
+async function postNextConfigBatch() {
     try {
         const files = await fs.readdir(RESULTS_DIR);
         if (files.length === 0) return;
@@ -129,13 +152,27 @@ async function postNextConfig() {
             return;
         }
 
-        const configToPost = configs.shift();
-        const message = `<code>${configToPost.config}</code>\n\n<b>Latency:</b> ${configToPost.latency}ms`;
+        const batchToPost = configs.splice(0, POST_BATCH_SIZE);
+        
+        const formattedConfigs = batchToPost.map(c => {
+            const flag = getFlagEmoji(c.countryCode, c.name);
+            const speedInfo = c.speedMbps ? ` - ${c.speedMbps} Mbps` : '';
+            const newName = `${flag} ${speedInfo} ${TARGET_CHANNEL_ID}`;
+            const configPart = c.config.split('#')[0];
+            return `${flag}${speedInfo}\n${configPart}#${encodeURIComponent(newName)}`;
+        }).join('\n');
+        
+        const message = `<code>${formattedConfigs}</code>`;
 
         await bot.sendMessage(TARGET_CHANNEL_ID, message, { parse_mode: 'HTML', disable_notification: true });
-        console.log(`[Bot] Posted config: ${configToPost.name} (${configToPost.latency}ms)`);
+        console.log(`[Bot] Posted a batch of ${batchToPost.length} configs.`);
 
-        await fs.writeFile(filePath, JSON.stringify(configs, null, 2));
+        if (configs.length === 0) {
+            await fs.unlink(filePath);
+            console.log(`[Bot] Finished and deleted result file: ${currentFile}`);
+        } else {
+            await fs.writeFile(filePath, JSON.stringify(configs, null, 2));
+        }
 
     } catch (error) {
         console.error("[Bot] Error during posting cycle:", error.message.includes('ETIMEDOUT') ? 'Proxy connection timed out.' : error);
@@ -144,12 +181,12 @@ async function postNextConfig() {
 
 async function startPostingCycle() {
     const row = await get("SELECT value FROM settings WHERE key = 'posting_interval_seconds'");
-    const intervalSeconds = (row && row.value) ? parseInt(row.value, 10) : 900;
+    const intervalSeconds = (row && row.value) ? parseInt(row.value, 10) : 1800;
     
-    console.log(`[Bot] Posting one config every ${intervalSeconds} seconds.`);
+    console.log(`[Bot] Posting a new batch of configs every ${intervalSeconds} seconds.`);
     
-    postNextConfig();
-    postingInterval = setInterval(postNextConfig, intervalSeconds * 1000);
+    postNextConfigBatch();
+    postingInterval = setInterval(postNextConfigBatch, intervalSeconds * 1000);
 }
 
 // --- Start the entire application ---
