@@ -154,17 +154,32 @@ async function postNextConfigBatch() {
 
         const batchToPost = configs.splice(0, POST_BATCH_SIZE);
         
+        const allConfigsCombined = []
+
         const formattedConfigs = batchToPost.map(c => {
             const flag = getFlagEmoji(c.countryCode, c.name);
-            const speedInfo = c.speedMbps ? ` - ${c.speedMbps} Mbps` : '';
-            const newName = `${flag} ${speedInfo} ${TARGET_CHANNEL_ID}`;
-            const configPart = c.config.split('#')[0];
-            return `${flag}${speedInfo}\n${configPart}#${encodeURIComponent(newName)}`;
-        }).join('\n');
-        
-        const message = `<code>${formattedConfigs}</code>`;
+            const speedInfo = c.speedMbps ? `${c.speedMbps} Mbps` : '';
 
-        await bot.sendMessage(TARGET_CHANNEL_ID, message, { parse_mode: 'HTML', disable_notification: true });
+            const hashtags = c.tags ? c.tags.join(' ') : '';
+            const newName = `${flag} - ${speedInfo} ${TARGET_CHANNEL_ID}}`.trim().replace(/\s+/g, '');
+
+            const configPart = c.config.split('#')[0];
+            const configWithRemark = `${configPart}#${encodeURIComponent(newName)}`
+            allConfigsCombined.push(configWithRemark);
+
+            return `${flag} ${speedInfo} ${hashtags}\n<code>${configWithRemark}</code>`;
+        }).join('\n\n');
+
+        let message = formattedConfigs;
+
+        const allConfigsCombinedText = allConfigsCombined.join('\n');
+        
+        message = message.concat(`\n\n📥\n<pre>${allConfigsCombinedText}</pre>`);
+
+        await bot.sendMessage(TARGET_CHANNEL_ID, message, {
+            parse_mode: 'HTML',
+            disable_notification: true
+        });
         console.log(`[Bot] Posted a batch of ${batchToPost.length} configs.`);
 
         if (configs.length === 0) {
