@@ -136,57 +136,79 @@ let postingInterval;
 
 async function postNextConfigBatch() {
     try {
+        // --- 1. Aggregate all available configs ---
         const files = await fs.readdir(RESULTS_DIR);
-        if (files.length === 0) return;
+        let allConfigs = [];
 
-        files.sort();
-        const currentFile = files[0];
-        const filePath = path.join(RESULTS_DIR, currentFile);
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue; // Skip non-json files
+            const filePath = path.join(RESULTS_DIR, file);
+            try {
+                const data = await fs.readFile(filePath, 'utf-8');
+                const parsedConfigs = JSON.parse(data);
+                allConfigs.push(...parsedConfigs);
+                await fs.unlink(filePath); // Delete the original file after reading
+            } catch (e) {
+                console.error(`[Bot] Error processing file ${file}, skipping.`, e);
+            }
+        }
 
-        const data = await fs.readFile(filePath, 'utf-8');
-        const configs = JSON.parse(data);
-
-        if (configs.length === 0) {
-            console.log(`[Bot] Result file ${currentFile} is empty. Deleting it.`);
-            await fs.unlink(filePath);
+        if (allConfigs.length === 0) {
+            console.log("[Bot] No new configs to post.");
             return;
         }
 
-        const batchToPost = configs.splice(0, POST_BATCH_SIZE);
+        // --- 2. Sort the master list to find the best configs ---
+        // This is crucial to ensure the absolute best is always picked first.
+        allConfigs.sort((a, b) => (b.tags.length - a.tags.length) || (b.speedMbps || 0) - (a.speedMbps || 0) || a.latency - b.latency);
         
-        const allConfigsCombined = []
+        // --- 3. Smart Selection for the batch ---
+        const batchToPost = [];
+        
+        // Always add the single best config to the batch
+        if (allConfigs.length > 0) {
+            batchToPost.push(allConfigs.shift()); // .shift() removes and returns the first element
+        }
 
+        // Add random configs from the rest of the pool to fill the batch
+        const remainingSpots = POST_BATCH_SIZE - batchToPost.length;
+        for (let i = 0; i < remainingSpots && allConfigs.length > 0; i++) {
+            const randomIndex = Math.floor(Math.random() * allConfigs.length);
+            // .splice() removes the element and returns it in an array
+            batchToPost.push(allConfigs.splice(randomIndex, 1)[0]);
+        }
+
+        if (batchToPost.length === 0) return;
+
+        // --- 4. Format and Post the message (same as before) ---
         const formattedConfigs = batchToPost.map(c => {
             const flag = getFlagEmoji(c.countryCode, c.name);
-            const speedInfo = c.speedMbps ? `${c.speedMbps} Mbps` : '';
-
+            const speedInfo = c.speedMbps ? `⚡️ ${c.speedMbps} Mbps` : '';
+            const latencyInfo = c.latency ? `📶 ${c.latency}ms` : '';
             const hashtags = c.tags ? c.tags.join(' ') : '';
-            const newName = `${flag} - ${speedInfo} ${TARGET_CHANNEL_ID}}`.trim().replace(/\s+/g, '');
-
+            
+            const remarkName = `${flag} - ${speedInfo} ${TARGET_CHANNEL_ID}`;
+            
             const configPart = c.config.split('#')[0];
-            const configWithRemark = `${configPart}#${encodeURIComponent(newName)}`
-            allConfigsCombined.push(configWithRemark);
+            const configWithRemark = `${configPart}#${encodeURIComponent(remarkName)}`;
 
-            return `${flag} ${speedInfo} ${hashtags}\n<code>${configWithRemark}</code>`;
+            return `<code>${configWithRemark}</code>\n${flag} ${[latencyInfo, speedInfo, hashtags].filter(Boolean).join(' | ')}`;
         }).join('\n\n');
-
-        let message = formattedConfigs;
-
-        const allConfigsCombinedText = allConfigsCombined.join('\n');
         
-        message = message.concat(`\n\n📥\n<pre>${allConfigsCombinedText}</pre>`);
+        const message = `${formattedConfigs}`;
 
         await bot.sendMessage(TARGET_CHANNEL_ID, message, {
             parse_mode: 'HTML',
             disable_notification: true
         });
-        console.log(`[Bot] Posted a batch of ${batchToPost.length} configs.`);
+        console.log(`[Bot] Posted a smart batch of ${batchToPost.length} configs.`);
 
-        if (configs.length === 0) {
-            await fs.unlink(filePath);
-            console.log(`[Bot] Finished and deleted result file: ${currentFile}`);
-        } else {
-            await fs.writeFile(filePath, JSON.stringify(configs, null, 2));
+        // --- 5. Save the remaining configs for the next cycle ---
+        if (allConfigs.length > 0) {
+            // We save the leftovers back into a single file for simplicity.
+            const masterPoolPath = path.join(RESULTS_DIR, `_pool_${Date.now()}.json`);
+            await fs.writeFile(masterPoolPath, JSON.stringify(allConfigs, null, 2));
+            console.log(`[Bot] Saved ${allConfigs.length} remaining configs to the pool.`);
         }
 
     } catch (error) {

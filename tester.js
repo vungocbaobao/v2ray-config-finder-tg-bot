@@ -17,10 +17,23 @@ const SPEED_TEST_URL = process.env.SPEED_TEST_URL || 'http://cachefly.cachefly.n
 const SPEED_TEST_FILE_SIZE_MB = process.env.SPEED_TEST_FILE_SIZE_MB ? parseInt(process.env.SPEED_TEST_FILE_SIZE_MB, 10) : 5;
 
 const SERVICES_TO_TEST = [
-    { url: 'https://music.youtube.com', hashtag: '#YouTube_Music' },
-    { url: 'https://www.spotify.com', hashtag: '#Spotify' },
-    { url: 'https://chat.openai.com', hashtag: '#ChatGPT' },
-    { url: 'https://gemini.google.com', hashtag: '#Gemini' }
+    // --- AI Services ---
+    { url: 'https://chatgpt.com/cdn-cgi/trace', hashtag: '#ChatGPT' },
+    { url: 'https://gemini.google.com/robots.txt', hashtag: '#Gemini' },
+    
+    // --- Streaming & Music ---
+    { url: 'https://www.netflix.com/robots.txt', hashtag: '#Netflix' },
+    { url: 'http://googlevideo.com', hashtag: '#YouTube_Music' },
+    { url: 'https://accounts.spotify.com/', hashtag: '#Spotify' },
+
+    // --- Social & Communication ---
+    { url: 'https://www.tiktok.com/robots.txt', hashtag: '#TikTok' },
+    { url: 'https://api.telegram.org/', hashtag: '#Telegram' },
+    { url: 'https://discord.com/api/v10/gateway', hashtag: '#Discord' },
+
+    // --- Gaming ---
+    { url: 'https://store.steampowered.com/', hashtag: '#Steam' },
+    { url: 'https://www.activision.com/robots.txt', hashtag: '#Activision' }
 ];
 
 // --- Command-line argument parsing ---
@@ -144,14 +157,23 @@ async function testConfig(originalLink, testPort) {
         const agent = new SocksProxyAgent(`socks5://127.0.0.1:${testPort}`);
         const startTime = Date.now();
         
+        const browserHeaders = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+        };
+
         await axios.get("http://www.gstatic.com/generate_204", { httpAgent: agent, httpsAgent: agent, timeout: MAX_LATENCY_MS });
         const latency = Date.now() - startTime;
-        
+
         // Services Testing
         const workingServices = [];
         for (const service of SERVICES_TO_TEST) {
             try {
-                await axios.get(service.url, { httpAgent: agent, httpsAgent: agent, timeout: 5000 });
+                await axios.get(service.url, {
+                    httpAgent: agent,
+                    httpsAgent: agent,
+                    headers: browserHeaders,
+                    timeout: 5000
+                });
                 workingServices.push(service.hashtag);
                 console.log(`[${service.hashtag}] success for ${details.ps}`);
             } catch (serviceError) {
@@ -198,7 +220,7 @@ async function processAndTestConfigs(configsToTest, sourceName) {
     }
 
     if (workingConfigs.length > 0) {
-        workingConfigs.sort((a, b) => (b.speedMbps || 0) - (a.speedMbps || 0) || a.latency - b.latency);
+        workingConfigs.sort((a, b) => (b.tags.length - a.tags.length) || (b.speedMbps || 0) - (a.speedMbps || 0) || a.latency - b.latency);
         
         const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
         const filename = `./results/${sourceName}_${timestamp}.json`;
